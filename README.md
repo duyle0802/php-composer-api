@@ -524,7 +524,7 @@ Solution:
 
 ## 👤 Contact & Support
 
-**Developer**: Hằng Dương  
+**Developer**: Duy Lê
 **Email**: freak8927@gmail.com  
 **Project**: BrightShop E-Commerce Platform  
 **Date**: February 2026
