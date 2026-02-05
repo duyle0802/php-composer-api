@@ -1,0 +1,10 @@
+RewriteEngine On
+
+# Remove .php extension
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ api.php?/$1 [QSA,L]
+
+# Allow direct access to specific files
+RewriteCond %{REQUEST_URI} \.(css|js|jpg|jpeg|png|gif|svg|ico|woff|woff2)$ [NC]
+RewriteRule ^.*$ - [L]

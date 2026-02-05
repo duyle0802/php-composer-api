@@ -1,0 +1,14 @@
+{
+    "name": "brightshop/ecommerce",
+    "description": "BrightShop E-commerce Platform",
+    "require": {
+        "php": ">=7.4",
+        "phpmailer/phpmailer": "^6.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Config\\": "config/"
+        }
+    }
+}

@@ -1,0 +1,5 @@
+RewriteEngine On
+
+# Redirect to public folder
+RewriteCond %{REQUEST_URI} !^/PHPCom_APIver/public/
+RewriteRule ^(.*)$ /PHPCom_APIver/public/$1 [L]

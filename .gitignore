@@ -1,0 +1,64 @@
+# BrightShop E-Commerce Project .gitignore
+
+# Environment variables - DO NOT COMMIT PASSWORDS/API KEYS
+.env
+.env.local
+.env.*.local
+
+# IDE & Editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Test files & utility scripts (development only)
+test_*.php
+*_test.php
+tests/
+gen_hash.php
+insert_products.php
+setup.php
+placeholder.php
+
+# Logs & temporary files
+*.log
+logs/
+debug/
+tmp/
+temp/
+*.tmp
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+.npm
+.yarn/
+vendor/
+composer.lock
+
+# Documentation files (except README.md and FILE_TREE.txt)
+*.md
+!README.md
+*.txt
+!FILE_TREE.txt
+
+# Database backups
+*.sql
+database/backups/
+database/exports/
+*.bak
+*.backup
+
+# Cache & session files
+cache/
+sessions/
+.cache/
+
+# Keep important files
+!.htaccess
+!.gitkeep
+!.gitignore
