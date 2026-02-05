@@ -1,5 +1,9 @@
-// API Base URL
-const API_URL = '/api';
+// API Base URL - dynamically determined based on page location
+// Get the current path (e.g., "/" or "/PHPCom_APIver/")
+const basePath = window.location.pathname.includes('/PHPCom_APIver/') 
+    ? '/PHPCom_APIver/api' 
+    : '/api';
+const API_URL = basePath;
 
 // Fetch cart count
 function updateCartCount() {

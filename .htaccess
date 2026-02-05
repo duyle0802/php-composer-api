@@ -1,5 +1,16 @@
+<IfModule mod_rewrite.c>
 RewriteEngine On
+RewriteBase /PHPCom_APIver/
 
-# Redirect to public folder
-RewriteCond %{REQUEST_URI} !^/PHPCom_APIver/public/
-RewriteRule ^(.*)$ /PHPCom_APIver/public/$1 [L]
+# Don't rewrite real files and directories
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Route API requests to api.php
+RewriteRule ^api/(.*)$ api.php?endpoint=$1 [QSA,L]
+
+# Everything else goes through index.php for routing
+RewriteRule ^(?!assets/).*$ index.php [L]
+
+</IfModule>
