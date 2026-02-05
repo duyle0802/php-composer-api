@@ -15,13 +15,14 @@ class Cart
     {
         $query = "INSERT INTO cart (user_id, product_id, quantity) 
                   VALUES (:user_id, :product_id, :quantity)
-                  ON DUPLICATE KEY UPDATE quantity = quantity + :quantity";
+                  ON DUPLICATE KEY UPDATE quantity = quantity + :quantity_update";
         
         $stmt = $this->db->prepare($query);
         
         $stmt->bindParam(':user_id', $user_id, \PDO::PARAM_INT);
         $stmt->bindParam(':product_id', $product_id, \PDO::PARAM_INT);
         $stmt->bindParam(':quantity', $quantity, \PDO::PARAM_INT);
+        $stmt->bindParam(':quantity_update', $quantity, \PDO::PARAM_INT);
         
         return $stmt->execute();
     }
