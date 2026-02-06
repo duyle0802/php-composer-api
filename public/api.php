@@ -111,6 +111,10 @@ $routes = [
     
     // Contact routes
     'contact/send' => ['method' => 'POST', 'controller' => 'ContactController', 'action' => 'send'],
+
+    // Admin Dashboard routes
+    'admin/stats' => ['method' => 'GET', 'controller' => 'AdminController', 'action' => 'getDashboardStats'],
+    'admin/charts' => ['method' => 'GET', 'controller' => 'AdminController', 'action' => 'getChartData'],
 ];
 
 // Process request

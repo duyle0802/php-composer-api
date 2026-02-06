@@ -31,7 +31,10 @@ function logout() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                window.location.href = '/?page=home';
+                // Use the current pathname (e.g., /PHPCom_APIver/public/index.php or /) 
+                // and append the query string
+                const currentPath = window.location.pathname;
+                window.location.href = currentPath + '?page=home';
             }
         });
 }

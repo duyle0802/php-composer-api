@@ -20,7 +20,10 @@ class UserController
             return json_encode(['success' => false, 'message' => 'Unauthorized']);
         }
 
-        $users = $this->user_model->getAllUsers();
+        $role = isset($_GET['role']) && $_GET['role'] !== '' ? $_GET['role'] : null;
+        $is_banned = isset($_GET['is_banned']) && $_GET['is_banned'] !== '' ? (int)$_GET['is_banned'] : null;
+
+        $users = $this->user_model->getAllUsers($role, $is_banned);
 
         http_response_code(200);
         return json_encode(['success' => true, 'users' => $users]);

@@ -82,13 +82,23 @@ class Order
         return $stmt->fetchAll();
     }
 
-    public function getAllOrders()
+    public function getAllOrders($status = null)
     {
         $query = "SELECT o.*, u.username, u.full_name FROM orders o
-                  LEFT JOIN users u ON o.user_id = u.id
-                  ORDER BY o.created_at DESC";
+                  LEFT JOIN users u ON o.user_id = u.id";
+        
+        if ($status) {
+            $query .= " WHERE o.status = :status";
+        }
+        
+        $query .= " ORDER BY o.created_at DESC";
         
         $stmt = $this->db->prepare($query);
+        
+        if ($status) {
+            $stmt->bindParam(':status', $status);
+        }
+        
         $stmt->execute();
         
         return $stmt->fetchAll();

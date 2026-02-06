@@ -15,10 +15,25 @@ class CategoryController
 
     public function getAll()
     {
-        $categories = $this->category_model->getAll();
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 7;
+        $offset = ($page - 1) * $limit;
+
+        $categories = $this->category_model->getAll($limit, $offset);
+        $total = $this->category_model->countAll();
+        $total_pages = ceil($total / $limit);
 
         http_response_code(200);
-        return json_encode(['success' => true, 'categories' => $categories]);
+        return json_encode([
+            'success' => true, 
+            'categories' => $categories,
+            'pagination' => [
+                'current_page' => $page,
+                'total_pages' => $total_pages,
+                'total_items' => $total,
+                'items_per_page' => $limit
+            ]
+        ]);
     }
 
     public function getById()

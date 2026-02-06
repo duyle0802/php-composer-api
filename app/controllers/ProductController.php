@@ -16,11 +16,18 @@ class ProductController
     public function getAll()
     {
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $limit = defined('ITEMS_PER_PAGE') ? ITEMS_PER_PAGE : 9;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 7; // Default 7 as requested
         $offset = ($page - 1) * $limit;
+        $category_id = isset($_GET['category_id']) && $_GET['category_id'] !== '' ? (int)$_GET['category_id'] : null;
 
-        $products = $this->product_model->getAll($limit, $offset);
-        $total = $this->product_model->countAll();
+        if ($category_id) {
+            $products = $this->product_model->getByCategory($category_id, $limit, $offset);
+            $total = $this->product_model->countByCategory($category_id);
+        } else {
+            $products = $this->product_model->getAll($limit, $offset);
+            $total = $this->product_model->countAll();
+        }
+
         $total_pages = ceil($total / $limit);
 
         http_response_code(200);

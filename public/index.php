@@ -11,7 +11,7 @@ $pdo = $db->connect();
 $page = isset($_GET['page']) ? basename($_GET['page']) : 'home';
 
 // Whitelist allowed pages
-$allowed_pages = ['home', 'products', 'product-detail', 'about', 'contact', 'login', 'register', 'cart', 'checkout', 'admin', 'order-confirmation', 'add-address'];
+$allowed_pages = ['home', 'products', 'product-detail', 'about', 'contact', 'login', 'register', 'cart', 'checkout', 'admin', 'order-confirmation', 'add-address', 'profile', 'orders'];
 
 if (!in_array($page, $allowed_pages)) {
     $page = 'home';

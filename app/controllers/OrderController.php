@@ -473,7 +473,8 @@ class OrderController
             return json_encode(['success' => false, 'message' => 'Unauthorized']);
         }
 
-        $orders = $this->order_model->getAllOrders();
+        $status = isset($_GET['status']) && $_GET['status'] !== '' ? $_GET['status'] : null;
+        $orders = $this->order_model->getAllOrders($status);
 
         http_response_code(200);
         return json_encode(['success' => true, 'orders' => $orders]);
@@ -488,17 +489,54 @@ class OrderController
 
         $data = json_decode(file_get_contents("php://input"), true);
 
-        if (!isset($data['order_id'], $data['status'])) {
+        if (!isset($data['order_id'], $data['status'], $data['pin'])) {
             http_response_code(400);
             return json_encode(['success' => false, 'message' => 'Missing required fields']);
         }
 
-        $order_id = (int)$data['order_id'];
-        $status = $data['status'];
+        // Verify PIN
+        if ($data['pin'] !== '7777') {
+            http_response_code(403);
+            return json_encode(['success' => false, 'message' => 'Mã PIN không chính xác!']);
+        }
 
-        if ($this->order_model->updateOrderStatus($order_id, $status)) {
+        $order_id = (int)$data['order_id'];
+        $new_status = $data['status'];
+        
+        // Get current status
+        $current_order = $this->order_model->getOrderById($order_id);
+        if (!$current_order) {
+           http_response_code(404);
+           return json_encode(['success' => false, 'message' => 'Order not found']);
+        }
+        
+        $current_status = $current_order['status'];
+        
+        // Define allowed transitions
+        $allowed_transitions = [
+            'pending' => ['confirmed', 'cancelled'],
+            'confirmed' => ['shipping', 'cancelled'],
+            'shipping' => ['completed'],
+            'completed' => [],
+            'cancelled' => []
+        ];
+
+        if (!in_array($new_status, $allowed_transitions[$current_status] ?? [])) {
+            http_response_code(400);
+            return json_encode([
+                'success' => false, 
+                'message' => "Không thể chuyển từ trạng thái '$current_status' sang '$new_status'. Chỉ được phép chuyển tiếp."
+            ]);
+        }
+
+        if ($this->order_model->updateOrderStatus($order_id, $new_status)) {
+            // Send email notification based on new status (optional but good)
+            if ($new_status === 'shipping') {
+                 // specific logic for shipping if needed
+            }
+            
             http_response_code(200);
-            return json_encode(['success' => true, 'message' => 'Order status updated']);
+            return json_encode(['success' => true, 'message' => 'Cập nhật trạng thái đơn hàng thành công']);
         } else {
             http_response_code(500);
             return json_encode(['success' => false, 'message' => 'Failed to update order status']);

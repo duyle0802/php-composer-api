@@ -61,11 +61,31 @@ class User
         return $stmt->fetch();
     }
 
-    public function getAllUsers()
+    public function getAllUsers($role = null, $is_banned = null)
     {
         $query = "SELECT id, username, email, full_name, phone, address, role, is_banned, created_at FROM users";
+        $conditions = [];
+        
+        if ($role) {
+            $conditions[] = "role = :role";
+        }
+        if ($is_banned !== null) {
+            $conditions[] = "is_banned = :is_banned";
+        }
+
+        if (!empty($conditions)) {
+            $query .= " WHERE " . implode(' AND ', $conditions);
+        }
         
         $stmt = $this->db->prepare($query);
+        
+        if ($role) {
+            $stmt->bindParam(':role', $role);
+        }
+        if ($is_banned !== null) {
+            $stmt->bindParam(':is_banned', $is_banned, \PDO::PARAM_INT);
+        }
+        
         $stmt->execute();
         
         return $stmt->fetchAll();

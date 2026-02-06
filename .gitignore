@@ -15,14 +15,11 @@
 Thumbs.db
 
 # Test files & utility scripts (development only)
-test_*.php
-*_test.php
-tests/
-gen_hash.php
-insert_products.php
-setup.php
-placeholder.php
-quick_verify.php
+# Test files & utility scripts (development only)
+tests/results/
+scripts/setup.php
+scripts/gen_hash.php
+scripts/quick_verify.php
 
 # Logs & temporary files
 *.log
