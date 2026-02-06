@@ -47,9 +47,19 @@ define('ADMIN_NAME', 'BrightShop Admin');
 // Pagination
 define('ITEMS_PER_PAGE', 9);
 
+// Store Location (Quang Trung Software City, Q12, HCMC)
+define('STORE_LAT', 10.8553677);
+define('STORE_LNG', 106.6300405);
+
+// Google Maps API Key
+define('GOOGLE_MAPS_API_KEY', 'YOUR_GOOGLE_MAPS_API_KEY');
+
 // Shipping configuration
-define('FREE_SHIPPING_DISTANCE', 25); // km
-define('SHIPPING_COST_PER_25KM', 20000); // VND
+define('SHIPPING_FEE_UNDER_100KM', 0);
+define('SHIPPING_FEE_100_250KM', 50000);
+define('SHIPPING_FEE_BASE_OVER_250KM', 50000);
+define('SHIPPING_FEE_STEP_OVER_250KM', 10000);
+define('SHIPPING_STEP_DISTANCE', 10);
 
 // Session timeout
 define('SESSION_TIMEOUT', 1800); // 30 minutes

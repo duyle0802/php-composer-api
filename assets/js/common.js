@@ -1,7 +1,7 @@
 // API Base URL - dynamically determined based on page location
 // Get the current path (e.g., "/" or "/PHPCom_APIver/")
-const basePath = window.location.pathname.includes('/PHPCom_APIver/') 
-    ? '/PHPCom_APIver/api' 
+const basePath = window.location.pathname.includes('/PHPCom_APIver/')
+    ? '/PHPCom_APIver/api'
     : '/api';
 const API_URL = basePath;
 
@@ -28,12 +28,12 @@ function logout() {
             'Content-Type': 'application/json'
         }
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            window.location.href = '/?page=home';
-        }
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '/?page=home';
+            }
+        });
 }
 
 // Add to cart
@@ -48,19 +48,19 @@ function addToCart(productId, quantity = 1) {
             quantity: quantity
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            updateCartCount();
-            showAlert('Sản phẩm đã được thêm vào giỏ hàng!', 'success');
-        } else {
-            showAlert(data.message || 'Lỗi khi thêm vào giỏ hàng', 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showAlert('Lỗi khi thêm vào giỏ hàng', 'danger');
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateCartCount();
+                showAlert('Sản phẩm đã được thêm vào giỏ hàng!', 'success');
+            } else {
+                showAlert(data.message || 'Lỗi khi thêm vào giỏ hàng', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('Lỗi khi thêm vào giỏ hàng', 'danger');
+        });
 }
 
 // Show alert message
@@ -105,14 +105,3 @@ function formatPrice(price) {
 }
 
 // Calculate shipping cost
-function calculateShippingCost(distance) {
-    const FREE_SHIPPING_DISTANCE = 25;
-    const SHIPPING_COST_PER_25KM = 20000;
-
-    if (distance <= FREE_SHIPPING_DISTANCE) {
-        return 0;
-    }
-
-    const kmOver = distance - FREE_SHIPPING_DISTANCE;
-    return Math.ceil(kmOver / 25) * SHIPPING_COST_PER_25KM;
-}

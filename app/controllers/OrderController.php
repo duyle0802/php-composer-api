@@ -19,28 +19,106 @@ class OrderController
         $this->voucher_model = new \App\Models\Voucher($db);
     }
 
+    public function calculateShipping()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'message' => 'Not authenticated']);
+            return;
+        }
+
+        $data = json_decode(file_get_contents("php://input"), true);
+        $address_id = isset($data['address_id']) ? (int)$data['address_id'] : 0;
+
+        if (!$address_id) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Address ID is required']);
+            return;
+        }
+
+        $user_address_model = new \App\Models\UserAddress($this->db);
+        $address = $user_address_model->getById($address_id);
+
+        if (!$address) {
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Address not found']);
+            return;
+        }
+
+        $distance = $this->calculateDistance(STORE_LAT, STORE_LNG, $address['lat'], $address['lng']);
+        $shipping_cost = $this->calculateShippingFee($distance);
+
+        echo json_encode([
+            'success' => true, 
+            'distance' => round($distance, 2), 
+            'shipping_cost' => $shipping_cost,
+            'formatted_shipping_cost' => number_format($shipping_cost, 0, ',', '.') . ' ₫'
+        ]);
+    }
+
+    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earth_radius = 6371; // km
+
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+             sin($dLon / 2) * sin($dLon / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return $earth_radius * $c;
+    }
+
+    private function calculateShippingFee($distance)
+    {
+        if ($distance < 100) {
+            return SHIPPING_FEE_UNDER_100KM;
+        } elseif ($distance <= 250) {
+            return SHIPPING_FEE_100_250KM;
+        } else {
+            $extra_km = $distance - 250;
+            $steps = floor($extra_km / SHIPPING_STEP_DISTANCE);
+            return SHIPPING_FEE_BASE_OVER_250KM + ($steps * SHIPPING_FEE_STEP_OVER_250KM);
+        }
+    }
+
     public function createOrder()
     {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
-            return json_encode(['success' => false, 'message' => 'Not authenticated']);
+            echo json_encode(['success' => false, 'message' => 'Not authenticated']);
+            return;
         }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
-            return json_encode(['success' => false, 'message' => 'Method not allowed']);
+            echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+            return;
         }
 
         $data = json_decode(file_get_contents("php://input"), true);
 
-        if (!isset($data['shipping_address'], $data['shipping_distance'])) {
+        if (!isset($data['address_id'])) {
             http_response_code(400);
-            return json_encode(['success' => false, 'message' => 'Missing required fields']);
+            echo json_encode(['success' => false, 'message' => 'Shipping Address is required']);
+            return;
         }
 
         $user_id = $_SESSION['user_id'];
-        $shipping_address = trim($data['shipping_address']);
-        $shipping_distance = (float)$data['shipping_distance'];
+        $address_id = (int)$data['address_id'];
+        
+        $user_address_model = new \App\Models\UserAddress($this->db);
+        $address = $user_address_model->getById($address_id);
+
+        if (!$address || $address['user_id'] != $user_id) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Invalid address']);
+            return;
+        }
+
         $selected_items = isset($data['selected_items']) ? $data['selected_items'] : [];
         $voucher_code = isset($data['voucher_code']) ? trim($data['voucher_code']) : '';
 
@@ -63,7 +141,8 @@ class OrderController
 
         if ($total_amount == 0) {
             http_response_code(400);
-            return json_encode(['success' => false, 'message' => 'No items selected']);
+            echo json_encode(['success' => false, 'message' => 'No items selected']);
+            return;
         }
 
         $discount_amount = 0;
@@ -76,15 +155,13 @@ class OrderController
             }
         }
 
-        $shipping_cost = 0;
-        if ($shipping_distance > defined('FREE_SHIPPING_DISTANCE') ? FREE_SHIPPING_DISTANCE : 25) {
-            $km_over_free = $shipping_distance - (defined('FREE_SHIPPING_DISTANCE') ? FREE_SHIPPING_DISTANCE : 25);
-            $shipping_cost = ceil($km_over_free / 25) * (defined('SHIPPING_COST_PER_25KM') ? SHIPPING_COST_PER_25KM : 20000);
-        }
+        // Calculate Shipping
+        $distance = $this->calculateDistance(STORE_LAT, STORE_LNG, $address['lat'], $address['lng']);
+        $shipping_cost = $this->calculateShippingFee($distance);
 
         $final_total = $total_amount + $shipping_cost;
 
-        $order_id = $this->order_model->createOrder($user_id, $total_amount, $shipping_cost, $discount_amount, $shipping_address, $shipping_distance);
+        $order_id = $this->order_model->createOrder($user_id, $total_amount, $shipping_cost, $discount_amount, $address['address_line'], $distance);
 
         foreach ($order_items as $item) {
             $this->order_model->addOrderItem($order_id, $item['product_id'], $item['quantity'], $item['price']);
@@ -93,7 +170,7 @@ class OrderController
         }
 
         http_response_code(201);
-        return json_encode([
+        echo json_encode([
             'success' => true,
             'message' => 'Order created successfully',
             'order_id' => $order_id,

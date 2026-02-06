@@ -85,6 +85,7 @@ $routes = [
     
     // Order routes
     'orders/create' => ['method' => 'POST', 'controller' => 'OrderController', 'action' => 'createOrder'],
+    'orders/calculate-shipping' => ['method' => 'POST', 'controller' => 'OrderController', 'action' => 'calculateShipping'],
     'orders/detail' => ['method' => 'GET', 'controller' => 'OrderController', 'action' => 'getOrder'],
     'orders/user' => ['method' => 'GET', 'controller' => 'OrderController', 'action' => 'getUserOrders'],
     'orders/all' => ['method' => 'GET', 'controller' => 'OrderController', 'action' => 'getAllOrders'],
@@ -97,6 +98,10 @@ $routes = [
     'users/ban' => ['method' => 'GET', 'controller' => 'UserController', 'action' => 'banUser'],
     'users/unban' => ['method' => 'GET', 'controller' => 'UserController', 'action' => 'unbanUser'],
     'users/delete' => ['method' => 'GET', 'controller' => 'UserController', 'action' => 'deleteUser'],
+
+    // Address routes
+    'address/add' => ['method' => 'POST', 'controller' => 'AddressController', 'action' => 'addAddress'],
+    'address/list' => ['method' => 'GET', 'controller' => 'AddressController', 'action' => 'getAddresses'],
 ];
 
 // Process request

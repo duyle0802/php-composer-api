@@ -23,32 +23,17 @@
                     <strong id="subtotal">0 ₫</strong>
                 </div>
 
-                <div class="summary-item">
-                    <label for="voucher-code" class="form-label">Mã voucher</label>
-                    <div class="input-group">
-                        <input type="text" id="voucher-code" class="form-control" placeholder="Nhập mã voucher">
-                        <button class="btn btn-outline-secondary" type="button" onclick="applyVoucher()">Áp dụng</button>
-                    </div>
-                </div>
 
-                <div class="summary-item">
-                    <span>Giảm giá:</span>
-                    <strong id="discount-amount" class="text-danger">0 ₫</strong>
-                </div>
 
-                <div class="summary-item">
-                    <label for="shipping-distance" class="form-label">Khoảng cách giao hàng (km)</label>
-                    <input type="number" id="shipping-distance" class="form-control" value="0" min="0" onchange="calculateShipping()">
-                </div>
 
-                <div class="summary-item">
-                    <span>Phí giao hàng:</span>
-                    <strong id="shipping-cost">0 ₫</strong>
-                </div>
 
                 <div class="summary-item">
                     <span class="fs-5"><strong>Tổng cộng:</strong></span>
                     <strong id="final-total" class="fs-5 text-danger">0 ₫</strong>
+                </div>
+                
+                <div class="alert alert-light mt-2 text-center" style="font-size: 0.9em;">
+                    <i class="fas fa-info-circle"></i> Phí giao hàng sẽ được tính tại bước thanh toán
                 </div>
 
                 <button class="btn btn-danger btn-lg w-100 mt-3" onclick="goToCheckout()">Tiến hành thanh toán</button>
@@ -173,48 +158,15 @@ function calculateTotals() {
     document.getElementById('total-items').textContent = totalItems;
     document.getElementById('subtotal').textContent = formatPrice(subtotal);
 
-    calculateShipping();
-}
-
-function calculateShipping() {
-    const distance = parseFloat(document.getElementById('shipping-distance').value) || 0;
-    const FREE_DISTANCE = 25;
-    const COST_PER_25KM = 20000;
-
-    let shippingCost = 0;
-    if (distance > FREE_DISTANCE) {
-        const kmOver = distance - FREE_DISTANCE;
-        shippingCost = Math.ceil(kmOver / 25) * COST_PER_25KM;
-    }
-
-    document.getElementById('shipping-cost').textContent = formatPrice(shippingCost);
-
     updateFinalTotal();
 }
 
-function applyVoucher() {
-    const code = document.getElementById('voucher-code').value;
-    if (!code) {
-        showAlert('Vui lòng nhập mã voucher', 'warning');
-        return;
-    }
 
-    // Validate voucher (can be done via API if needed)
-    // For now, just apply as 10% discount
-    const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace(/[^0-9]/g, '')) || 0;
-    const discount = Math.round(subtotal * 0.1);
-    
-    document.getElementById('discount-amount').textContent = formatPrice(discount);
-    updateFinalTotal();
-}
 
 function updateFinalTotal() {
     const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace(/[^0-9]/g, '')) || 0;
-    const discount = parseFloat(document.getElementById('discount-amount').textContent.replace(/[^0-9]/g, '')) || 0;
-    const shipping = parseFloat(document.getElementById('shipping-cost').textContent.replace(/[^0-9]/g, '')) || 0;
     
-    const total = subtotal - discount + shipping;
-    document.getElementById('final-total').textContent = formatPrice(Math.max(0, total));
+    document.getElementById('final-total').textContent = formatPrice(Math.max(0, subtotal));
 }
 
 function goToCheckout() {

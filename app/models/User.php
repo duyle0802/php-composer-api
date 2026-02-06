@@ -151,4 +151,13 @@ class User
         
         return $stmt->rowCount() > 0;
     }
+
+    public function getAddresses($user_id)
+    {
+        $query = "SELECT * FROM user_addresses WHERE user_id = :user_id ORDER BY is_default DESC, created_at DESC";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 }
