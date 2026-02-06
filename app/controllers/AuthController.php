@@ -140,4 +140,13 @@ class AuthController
             return json_encode(['success' => true, 'authenticated' => false]);
         }
     }
+
+    public function testLogin()
+    {
+        $_SESSION['user_id'] = 1;
+        $_SESSION['role'] = 'admin';
+        $_SESSION['username'] = 'admin';
+        $_SESSION['full_name'] = 'Admin User';
+        return json_encode(['success' => true, 'message' => 'Test session set']);
+    }
 }

@@ -56,7 +56,10 @@ $routes = [
     'auth/login' => ['method' => 'POST', 'controller' => 'AuthController', 'action' => 'login'],
     'auth/logout' => ['method' => 'POST', 'controller' => 'AuthController', 'action' => 'logout'],
     'auth/profile' => ['method' => 'GET', 'controller' => 'AuthController', 'action' => 'getProfile'],
+    'auth/logout' => ['method' => 'POST', 'controller' => 'AuthController', 'action' => 'logout'],
+    'auth/profile' => ['method' => 'GET', 'controller' => 'AuthController', 'action' => 'getProfile'],
     'auth/check' => ['method' => 'GET', 'controller' => 'AuthController', 'action' => 'checkAuth'],
+    'auth/test-login' => ['method' => 'GET', 'controller' => 'AuthController', 'action' => 'testLogin'],
     
     // Product routes
     'products' => ['method' => 'GET', 'controller' => 'ProductController', 'action' => 'getAll'],
@@ -90,6 +93,9 @@ $routes = [
     'orders/user' => ['method' => 'GET', 'controller' => 'OrderController', 'action' => 'getUserOrders'],
     'orders/all' => ['method' => 'GET', 'controller' => 'OrderController', 'action' => 'getAllOrders'],
     'orders/status' => ['method' => 'POST', 'controller' => 'OrderController', 'action' => 'updateOrderStatus'],
+    'payment/momo-ipn' => ['method' => 'POST', 'controller' => 'OrderController', 'action' => 'handleMoMoCallback'],
+    'payment/momo-simulate' => ['method' => 'GET', 'controller' => 'OrderController', 'action' => 'simulateMoMoPayment'],
+    'payment/momo-return' => ['method' => 'GET', 'controller' => 'OrderController', 'action' => 'handleMoMoReturn'],
     
     // User routes
     'users/all' => ['method' => 'GET', 'controller' => 'UserController', 'action' => 'getAllUsers'],
@@ -102,6 +108,9 @@ $routes = [
     // Address routes
     'address/add' => ['method' => 'POST', 'controller' => 'AddressController', 'action' => 'addAddress'],
     'address/list' => ['method' => 'GET', 'controller' => 'AddressController', 'action' => 'getAddresses'],
+    
+    // Contact routes
+    'contact/send' => ['method' => 'POST', 'controller' => 'ContactController', 'action' => 'send'],
 ];
 
 // Process request

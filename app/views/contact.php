@@ -54,19 +54,30 @@ document.getElementById('contact-form').addEventListener('submit', function(e) {
     const email = document.getElementById('email').value;
     const message = document.getElementById('message').value;
 
-    // Simulated email sending (in production, use backend API)
-    const subject = 'Liên hệ từ BrightShop: ' + name;
-    const body = `
-Họ tên: ${name}
-Email: ${email}
-
-Nội dung:
-${message}
-    `;
-
-    // Send via form (you would create a backend endpoint for this)
-    // For now, just show success message
-    showAlert('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.', 'success');
-    document.getElementById('contact-form').reset();
+    // Send via API
+    fetch(API_URL + '/contact/send', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: name,
+            email: email,
+            message: message
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.', 'success');
+            document.getElementById('contact-form').reset();
+        } else {
+            showAlert(data.message || 'Gửi tin nhắn thất bại', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Đã có lỗi xảy ra', 'danger');
+    });
 });
 </script>

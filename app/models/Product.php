@@ -249,11 +249,12 @@ class Product
 
     public function decreaseQuantity($id, $amount)
     {
-        $query = "UPDATE products SET quantity_in_stock = quantity_in_stock - :amount WHERE id = :id AND quantity_in_stock >= :amount";
+        $query = "UPDATE products SET quantity_in_stock = quantity_in_stock - :amount WHERE id = :id AND quantity_in_stock >= :amount_check";
         
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
         $stmt->bindParam(':amount', $amount, \PDO::PARAM_INT);
+        $stmt->bindParam(':amount_check', $amount, \PDO::PARAM_INT);
         
         return $stmt->execute();
     }

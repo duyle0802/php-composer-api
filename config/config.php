@@ -41,8 +41,25 @@ define('DB_USER', 'root');
 define('DB_PASS', 'Leduy0924A@');
 
 // Email configuration for contact form
-define('ADMIN_EMAIL', 'admin@brightshop.com');
-define('ADMIN_NAME', 'BrightShop Admin');
+define('ADMIN_EMAIL', getenv('ADMIN_EMAIL') ?: 'admin@brightshop.com');
+define('ADMIN_NAME', getenv('ADMIN_NAME') ?: 'BrightShop Admin');
+
+// Email Configuration (SMTP)
+define('SMTP_HOST', getenv('SMTP_HOST') ?: 'smtp.gmail.com');
+define('SMTP_PORT', getenv('SMTP_PORT') ?: 587);
+define('SMTP_USER', getenv('SMTP_USER') ?: '');
+define('SMTP_PASS', getenv('SMTP_PASS') ?: '');
+define('SMTP_SECURE', getenv('SMTP_SECURE') ?: 'tls');
+define('SMTP_FROM_EMAIL', getenv('SMTP_FROM_EMAIL') ?: 'no-reply@brightshop.com');
+define('SMTP_FROM_NAME', getenv('SMTP_FROM_NAME') ?: 'BrightShop');
+
+// MoMo Payment Configuration
+define('MOMO_PARTNER_CODE', getenv('MOMO_PARTNER_CODE') ?: '');
+define('MOMO_ACCESS_KEY', getenv('MOMO_ACCESS_KEY') ?: '');
+define('MOMO_SECRET_KEY', getenv('MOMO_SECRET_KEY') ?: '');
+define('MOMO_API_ENDPOINT', getenv('MOMO_API_ENDPOINT') ?: 'https://test-payment.momo.vn/v2/gateway/api/create');
+define('MOMO_NOTIFY_URL', getenv('MOMO_NOTIFY_URL') ?: BASE_URL . '/payment/momo-ipn');
+define('MOMO_RETURN_URL', getenv('MOMO_RETURN_URL') ?: BASE_URL . '/payment/momo-return');
 
 // Pagination
 define('ITEMS_PER_PAGE', 9);

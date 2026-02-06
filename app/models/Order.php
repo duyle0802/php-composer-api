@@ -11,10 +11,10 @@ class Order
         $this->db = $db;
     }
 
-    public function createOrder($user_id, $total_amount, $shipping_cost, $discount_amount, $shipping_address, $shipping_distance)
+    public function createOrder($user_id, $total_amount, $shipping_cost, $discount_amount, $shipping_address, $shipping_distance, $payment_method = 'cod', $payment_status = 'pending')
     {
-        $query = "INSERT INTO orders (user_id, total_amount, shipping_cost, discount_amount, shipping_address, shipping_distance)
-                  VALUES (:user_id, :total_amount, :shipping_cost, :discount_amount, :shipping_address, :shipping_distance)";
+        $query = "INSERT INTO orders (user_id, total_amount, shipping_cost, discount_amount, shipping_address, shipping_distance, payment_method, payment_status)
+                  VALUES (:user_id, :total_amount, :shipping_cost, :discount_amount, :shipping_address, :shipping_distance, :payment_method, :payment_status)";
         
         $stmt = $this->db->prepare($query);
         
@@ -24,6 +24,8 @@ class Order
         $stmt->bindParam(':discount_amount', $discount_amount);
         $stmt->bindParam(':shipping_address', $shipping_address);
         $stmt->bindParam(':shipping_distance', $shipping_distance);
+        $stmt->bindParam(':payment_method', $payment_method);
+        $stmt->bindParam(':payment_status', $payment_status);
         
         $stmt->execute();
         
@@ -106,5 +108,16 @@ class Order
     public function completeOrder($id)
     {
         return $this->updateOrderStatus($id, 'completed');
+    }
+    public function updatePaymentStatus($id, $status, $transaction_id = null)
+    {
+        $query = "UPDATE orders SET payment_status = :status, transaction_id = :transaction_id WHERE id = :id";
+        
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':transaction_id', $transaction_id);
+        
+        return $stmt->execute();
     }
 }

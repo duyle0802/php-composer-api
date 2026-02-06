@@ -37,7 +37,25 @@
                     </form>
                 </div>
             </div>
-
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Phương thức thanh toán</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCod" value="cod" checked>
+                        <label class="form-check-label" for="paymentCod">
+                            <i class="fas fa-money-bill-wave text-success"></i> Thanh toán khi nhận hàng (COD)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMomo" value="momo">
+                        <label class="form-check-label" for="paymentMomo">
+                            <i class="fas fa-qrcode text-pink" style="color: #A50064;"></i> Ví MoMo / Quét mã QR
+                        </label>
+                    </div>
+                </div>
+            </div>
             <div class="card">
                 <div class="card-header">
                     <h5>Sản phẩm thanh toán</h5>
@@ -278,6 +296,7 @@ function applyVoucher() {
 function confirmCheckout() {
     const addressId = document.getElementById('shipping-address-id').value;
     const voucherCode = document.getElementById('voucher-code').value;
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
 
     if (!addressId) {
         showAlert('Vui lòng chọn địa chỉ giao hàng', 'warning');
@@ -285,6 +304,12 @@ function confirmCheckout() {
     }
 
     let itemsToOrder = selectedItems.length > 0 ? selectedItems : cartItems.map(item => item.id);
+
+    // Show loading state
+    const checkoutBtn = document.querySelector('button[onclick="confirmCheckout()"]');
+    const originalText = checkoutBtn.innerText;
+    checkoutBtn.innerText = 'Đang xử lý...';
+    checkoutBtn.disabled = true;
 
     fetch(API_URL + '/orders/create', {
         method: 'POST',
@@ -294,17 +319,30 @@ function confirmCheckout() {
         body: JSON.stringify({
             address_id: addressId,
             voucher_code: voucherCode,
-            selected_items: itemsToOrder
+            selected_items: itemsToOrder,
+            payment_method: paymentMethod
         })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
             updateCartCount();
-            window.location.href = '<?php echo BASE_URL; ?>/?page=order-confirmation&order_id=' + data.order_id;
+            if (paymentMethod === 'momo' && data.payment_url) {
+                window.location.href = data.payment_url;
+            } else {
+                window.location.href = '<?php echo BASE_URL; ?>/?page=order-confirmation&order_id=' + data.order_id;
+            }
         } else {
             showAlert(data.message || 'Lỗi khi tạo đơn hàng', 'danger');
+            checkoutBtn.innerText = originalText;
+            checkoutBtn.disabled = false;
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Đã có lỗi xảy ra', 'danger');
+        checkoutBtn.innerText = originalText;
+        checkoutBtn.disabled = false;
     });
 }
 </script>

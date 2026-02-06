@@ -22,6 +22,7 @@ gen_hash.php
 insert_products.php
 setup.php
 placeholder.php
+quick_verify.php
 
 # Logs & temporary files
 *.log
