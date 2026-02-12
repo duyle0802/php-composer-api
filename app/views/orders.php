@@ -12,7 +12,10 @@
                     <button class="nav-link" onclick="filterOrders('pending')">Chờ xử lý</button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" onclick="filterOrders('processing')">Đang xử lý</button>
+                    <button class="nav-link" onclick="filterOrders('confirmed')">Đã xác nhận</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" onclick="filterOrders('shipping')">Đang giao</button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link" onclick="filterOrders('completed')">Hoàn thành</button>
@@ -133,7 +136,7 @@ function displayOrders(orders) {
         // Status mapping for colors and labels
         const statusConfig = {
             'pending': { label: 'Chờ xử lý', color: 'warning', icon: 'fa-clock' },
-            'processing': { label: 'Đang xử lý', color: 'info', icon: 'fa-box' },
+            'confirmed': { label: 'Đã xác nhận', color: 'info', icon: 'fa-clipboard-check' },
             'shipping': { label: 'Đang giao', color: 'primary', icon: 'fa-truck' },
             'completed': { label: 'Hoàn thành', color: 'success', icon: 'fa-check-circle' },
             'cancelled': { label: 'Đã hủy', color: 'danger', icon: 'fa-times-circle' }

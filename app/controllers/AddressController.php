@@ -72,7 +72,39 @@ class AddressController
     private function geocodeAddress($address)
     {
         // Use OpenStreetMap Nominatim API (Free)
-        $url = "https://nominatim.openstreetmap.org/search?format=json&q=" . urlencode($address) . "&limit=1";
+        // We try to geocode the full address first
+        $coords = $this->callNominatim($address);
+        
+        if ($coords) {
+            return $coords;
+        }
+
+        // IMPROVEMENT: If full address fails, try to geocode without the street name
+        // The address format from frontend is: "Street, Ward, District, Province"
+        $parts = explode(',', $address);
+        if (count($parts) >= 3) {
+            // Remove the first part (Street) and try again
+            array_shift($parts);
+            $generalAddress = implode(',', $parts);
+            $coords = $this->callNominatim($generalAddress);
+            if ($coords) {
+                 return $coords;
+            }
+        }
+        
+        // Final fallback: just District and Province
+        if (count($parts) >= 2) {
+             // Assuming the last two parts are District and Province
+             $districtProvince = implode(',', array_slice($parts, -2));
+             $coords = $this->callNominatim($districtProvince);
+             return $coords;
+        }
+
+        return false;
+    }
+
+    private function callNominatim($query) {
+        $url = "https://nominatim.openstreetmap.org/search?format=json&q=" . urlencode($query) . "&limit=1";
         
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -88,10 +120,10 @@ class AddressController
         if (!empty($data) && isset($data[0])) {
             return [
                 'lat' => $data[0]['lat'],
-                'lng' => $data[0]['lon']
+                'lon' => $data[0]['lon'] // Nominatim returns 'lon'
             ];
         }
-
         return false;
     }
+
 }

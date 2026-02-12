@@ -10,20 +10,36 @@
                 <div class="card-body">
                     <form id="checkout-form">
                         <div class="mb-3">
-                            <label for="shipping-address-id" class="form-label">Chọn địa chỉ giao hàng</label>
-                            <select id="shipping-address-id" class="form-select" onchange="calculateShipping()" required>
-                                <option value="" disabled selected>-- Chọn địa chỉ --</option>
-                            </select>
-                            <div class="mt-2">
-                                <a href="<?php echo BASE_URL; ?>/?page=add-address" class="btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-plus"></i> Thêm địa chỉ mới
-                                </a>
+                            <label class="form-label fw-bold">Địa chỉ giao hàng</label>
+                            <div class="card p-3 bg-light border-0" id="selected-address-card">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1" id="selected-address-text">Chưa chọn địa chỉ</h6>
+                                        <small class="text-muted" id="selected-distance-text">--</small>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="toggleAddressSelect()">
+                                        <i class="fas fa-edit"></i> Thay đổi
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="address-select-container" class="mt-3 d-none">
+                                <select id="shipping-address-id" class="form-select" onchange="onAddressChange()" required>
+                                    <option value="" disabled selected>-- Chọn địa chỉ --</option>
+                                </select>
+                                <div class="mt-2 text-end">
+                                    <a href="<?php echo BASE_URL; ?>/?page=add-address" class="btn btn-link btn-sm text-decoration-none">
+                                        <i class="fas fa-plus-circle"></i> Thêm địa chỉ mới
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
-                        <div id="shipping-info" class="alert alert-info d-none">
-                            <i class="fas fa-truck"></i> Khoảng cách: <span id="distance-display">0 km</span><br>
-                            <strong>Phí vận chuyển: <span id="shipping-cost-display">0 ₫</span></strong>
+                        <div id="shipping-info" class="alert alert-info d-none mt-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-route"></i> Khoảng cách: <strong id="distance-display">0 km</strong></span>
+                                <span>Phí vận chuyển: <strong id="shipping-cost-display" class="text-primary fs-5">0 ₫</strong></span>
+                            </div>
                         </div>
                         <input type="hidden" id="shipping-cost-value" value="0">
 
@@ -157,21 +173,20 @@ function populateAddresses() {
     select.innerHTML = '<option value="" disabled selected>-- Chọn địa chỉ --</option>';
 
     if (addresses.length === 0) {
-        // Redirect logic handled by checking length, or show message?
-        // User requested: "nếu chưa có thì chuyển sang trang để tạo một địa chỉ"
-        // But maybe we should just notify/show button? The prompt says "if none, redirect".
-        // Let's do a redirect if really 0, or just let them click the button?
-        // Current implementation shows "Add Address" button. 
-        // Let's force redirect if 0? 
-        // "logic khi khách hàng select địa chỉ đã được tạo trước đó, nếu chưa có thì chuyển sang trang để tạo"
-        // This implies if they try to select but have none.
+        // No addresses, show default state or redirect? 
+        // For now, let's keep the redirect logic but maybe improved?
+        // Actually, with the new UI, we can just show "No address" state.
         
-        // I'll stick to showing the button prominently, but maybe auto-redirect is too aggressive if they just want to check cart?
-        // "nếu chưa có thì chuyển sang trang" -> "If not have, switch to page". 
-        // I will redirect if address list is empty.
-        window.location.href = '<?php echo BASE_URL; ?>/?page=add-address';
+        document.getElementById('selected-address-text').textContent = 'Chưa có địa chỉ';
+        document.getElementById('selected-address-text').classList.add('text-danger');
+        
+        // Auto open select container so they see "Add new address" link
+        document.getElementById('address-select-container').classList.remove('d-none');
+        document.querySelector('button[onclick="toggleAddressSelect()"]').style.display = 'none'; // Hide change button if none
         return;
     }
+
+    let defaultAddressId = null;
 
     addresses.forEach(addr => {
         const option = document.createElement('option');
@@ -181,12 +196,41 @@ function populateAddresses() {
 
         // Auto selection if default
         if (addr.is_default == 1) {
-            select.value = addr.id;
+            defaultAddressId = addr.id;
         }
     });
     
-    // If we have a selected value (default), calculate shipping
-    if (select.value) {
+    // If no default, pick first
+    if (!defaultAddressId && addresses.length > 0) {
+        defaultAddressId = addresses[0].id;
+    }
+
+    if (defaultAddressId) {
+        select.value = defaultAddressId;
+        onAddressChange(); // Update UI
+    }
+}
+
+function toggleAddressSelect() {
+    const container = document.getElementById('address-select-container');
+    container.classList.toggle('d-none');
+}
+
+function onAddressChange() {
+    const select = document.getElementById('shipping-address-id');
+    const selectedOption = select.options[select.selectedIndex];
+    const addressId = select.value;
+
+    if (addressId) {
+        // Update Card UI
+        const addressText = selectedOption.textContent.replace(' (Mặc định)', '');
+        document.getElementById('selected-address-text').textContent = addressText;
+        document.getElementById('selected-address-text').classList.remove('text-danger');
+        
+        // Hide select container again for cleaner look
+        document.getElementById('address-select-container').classList.add('d-none');
+        
+        // Recalculate Shipping
         calculateShipping();
     }
 }

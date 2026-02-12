@@ -10,6 +10,22 @@
                     <p class="mb-4">Cảm ơn bạn đã mua sắm tại BrightShop. Đơn hàng của bạn đã được xác nhận.</p>
                     
                     <div id="order-details" class="text-start mb-4">
+                        <div class="card mb-4 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="position-relative m-4">
+                                    <div class="progress" style="height: 1px;">
+                                        <div class="progress-bar" role="progressbar" style="width: 0%;" id="status-progress-bar"></div>
+                                    </div>
+                                    <div class="position-absolute top-0 start-0 translate-middle btn btn-sm btn-primary rounded-pill" style="width: 2rem; height:2rem;">1</div>
+                                    <div class="position-absolute top-0 start-50 translate-middle btn btn-sm btn-secondary rounded-pill" style="width: 2rem; height:2rem;" id="step-2">2</div>
+                                    <div class="position-absolute top-0 start-100 translate-middle btn btn-sm btn-secondary rounded-pill" style="width: 2rem; height:2rem;" id="step-3">3</div>
+                                    
+                                    <div class="position-absolute top-100 start-0 translate-middle-x mt-2 text-center small fw-bold">Đã đặt hàng</div>
+                                    <div class="position-absolute top-100 start-50 translate-middle-x mt-2 text-center small text-muted">Đang giao</div>
+                                    <div class="position-absolute top-100 start-100 translate-middle-x mt-2 text-center small text-muted">Hoàn thành</div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="spinner"></div>
                     </div>
 
