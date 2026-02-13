@@ -1,40 +1,130 @@
 <div class="container">
-    <!-- Banner Carousel -->
-    <div id="bannerCarousel" class="carousel slide banner mb-5" data-bs-ride="carousel">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="0" class="active"></button>
-            <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="2"></button>
+    <!-- Hero Section -->
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); /* Deep Blue Gradient */
+            color: white;
+            padding: 80px 0;
+            border-radius: 20px;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            background: linear-gradient(to right, #fff, #a5c2f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-weight: 300;
+            max-width: 500px;
+        }
+        
+        .hero-btn {
+            background: #fff;
+            color: #1e3c72;
+            padding: 12px 35px;
+            font-weight: 700;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .hero-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            background: #f8f9fa;
+            color: #1e3c72;
+        }
+        
+        .hero-image-container {
+            position: absolute;
+            right: -5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 55%;
+            z-index: 1;
+        }
+        
+        .hero-image {
+            width: 100%;
+            /* Drop shadow for floating effect */
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.4));
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(1deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        
+        /* Shape decorations */
+        .decoration-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            z-index: 0;
+        }
+        
+        @media (max-width: 991px) {
+            .hero-section {
+                text-align: center;
+                padding: 60px 20px;
+            }
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                margin: 0 auto 2rem auto;
+            }
+            .hero-image-container {
+                position: relative;
+                width: 80%;
+                right: auto;
+                top: auto;
+                transform: none;
+                margin: 40px auto 0 auto;
+            }
+        }
+    </style>
+
+    <div class="hero-section">
+        <div class="decoration-circle" style="width: 300px; height: 300px; top: -100px; left: -100px;"></div>
+        <div class="decoration-circle" style="width: 200px; height: 200px; bottom: 50px; right: 20%;"></div>
+        
+        <div class="row align-items-center position-relative z-2 px-md-5">
+            <div class="col-lg-6 hero-content">
+                <h1 class="hero-title">Nâng Tầm Trải Nghiệm Gaming</h1>
+                <p class="hero-subtitle">Khám phá bộ sưu tập bàn phím cơ và chuột gaming cao cấp mới nhất. Thiết kế đẳng cấp, hiệu năng vượt trội.</p>
+                <a href="<?php echo BASE_URL; ?>/?page=products" class="hero-btn">Mua Ngay <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <!-- Using fixed image path we just confirmed works -->
+                <div class="hero-image-container">
+                    <img src="<?php echo BASE_URL; ?>/public/products/main_image/bàn-phím-cơ-logitech-g-pro-x.png" class="hero-image" alt="Gaming Gear">
+                </div>
+            </div>
         </div>
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="<?php echo BASE_URL; ?>/public/placeholder.php?banner=1" class="d-block w-100" alt="Banner 1">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Công Nghệ Hàng Đầu</h5>
-                    <p>Khám phá những sản phẩm công nghệ mới nhất</p>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="<?php echo BASE_URL; ?>/public/placeholder.php?banner=2" class="d-block w-100" alt="Banner 2">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Giá Cạnh Tranh</h5>
-                    <p>Mua sắm với giá tốt nhất tại BrightShop</p>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="<?php echo BASE_URL; ?>/public/placeholder.php?banner=3" class="d-block w-100" alt="Banner 3">
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>Chất Lượng Đảm Bảo</h5>
-                    <p>Sản phẩm chính hãng, bảo hành toàn quốc</p>
-                </div>
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
     </div>
 
     <!-- Featured Products Section -->

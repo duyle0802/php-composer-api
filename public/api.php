@@ -115,6 +115,9 @@ $routes = [
     // Admin Dashboard routes
     'admin/stats' => ['method' => 'GET', 'controller' => 'AdminController', 'action' => 'getDashboardStats'],
     'admin/charts' => ['method' => 'GET', 'controller' => 'AdminController', 'action' => 'getChartData'],
+
+    // Upload routes
+    'upload/image' => ['method' => 'POST', 'controller' => 'UploadController', 'action' => 'upload'],
 ];
 
 // Process request
