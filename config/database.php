@@ -32,7 +32,10 @@ class Database
             $this->connection = new PDO($dsn, $this->user, $this->password, $options);
             return $this->connection;
         } catch (PDOException $e) {
-            die('Connection Error: ' . $e->getMessage());
+            // Log the actual error for admins
+            error_log('Database Connection Error: ' . $e->getMessage());
+            // Show a generic message to users
+            die('A database connection error occurred. Please try again later.');
         }
     }
 
