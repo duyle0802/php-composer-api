@@ -76,11 +76,13 @@ try {
         $catRow = $stmt->fetch();
 
         if (!$catRow) {
-            echo "Cảnh báo: Không tìm thấy category '$categoryName'\n";
-            continue;
+            echo "Creating category '$categoryName'...\n";
+            $stmt = $pdo->prepare("INSERT INTO categories (name, description) VALUES (?, ?)");
+            $stmt->execute([$categoryName, "Danh mục tự động cho " . $categoryName]);
+            $categoryId = $pdo->lastInsertId();
+        } else {
+            $categoryId = $catRow['id'];
         }
-
-        $categoryId = $catRow['id'];
 
         // Insert sản phẩm
         foreach ($items as $product) {

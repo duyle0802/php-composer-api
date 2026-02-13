@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: phpcom-app
+    container_name: phpcom-app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=Bright_Database
+      - DB_USER=root
+      - DB_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - phpcom-network
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: phpcom-db
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: Bright_Database
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - phpcom-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  pma:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpcom-pma
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8081:80"
+    networks:
+      - phpcom-network
+    depends_on:
+      - db
+
+networks:
+  phpcom-network:
+    driver: bridge
+
+volumes:
+  db_data:

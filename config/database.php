@@ -11,11 +11,11 @@ class Database
 
     public function __construct()
     {
-        // Load from .env file
-        $this->host = getenv('DB_HOST') ?: 'localhost';
-        $this->db = getenv('DB_NAME') ?: 'Bright_Database';
-        $this->user = getenv('DB_USER') ?: 'root';
-        $this->password = getenv('DB_PASSWORD') ?: '';
+        // Load from .env file or use Constants from config.php
+        $this->host = getenv('DB_HOST') ?: (defined('DB_HOST') ? DB_HOST : 'localhost');
+        $this->db = getenv('DB_NAME') ?: (defined('DB_NAME') ? DB_NAME : 'Bright_Database');
+        $this->user = getenv('DB_USER') ?: (defined('DB_USER') ? DB_USER : 'root');
+        $this->password = getenv('DB_PASSWORD') ?: (defined('DB_PASS') ? DB_PASS : '');
     }
 
     public function connect()

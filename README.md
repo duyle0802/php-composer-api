@@ -211,14 +211,33 @@ chmod 755 -R assets/
 
 ### Step 5: Start Development Server
 
-**Option A: PHP Built-in Server (Recommended)**
+#### Option A: Docker (Recommended) 🐳
+
+1.  **Start the containers:**
+    ```bash
+    docker-compose up -d --build
+    ```
+
+2.  **Access the application:**
+    - **Web App**: [http://localhost:8080](http://localhost:8080)
+    - **phpMyAdmin**: [http://localhost:8081](http://localhost:8081)
+      - Server: `db`
+      - Username: `root`
+      - Password: (in your .env file)
+
+3.  **Stop containers:**
+    ```bash
+    docker-compose down
+    ```
+
+#### Option B: PHP Built-in Server
 ```bash
 cd /var/www/html/PHPCom_APIver
 php -S localhost:8000 router.php
 ```
 Then visit: `http://localhost:8000`
 
-**Option B: Apache Server**
+#### Option C: Apache Server
 ```bash
 # Configure Apache virtual host
 sudo a2enmod rewrite

@@ -9,8 +9,11 @@ if (file_exists($env_file)) {
             list($key, $value) = explode('=', $line, 2);
             $key = trim($key);
             $value = trim($value);
-            putenv("$key=$value");
-            $_ENV[$key] = $value;
+            // Only set if not already set (respect Docker env vars)
+            if (getenv($key) === false) {
+                putenv("$key=$value");
+                $_ENV[$key] = $value;
+            }
         }
     }
 }
@@ -23,8 +26,8 @@ $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https'
 $host = $_SERVER['HTTP_HOST'];
 $base_path = '';
 
-// For PHP built-in server (localhost:8000)
-if ($host === 'localhost:8000') {
+// For PHP built-in server (localhost:8000) or Docker (localhost:8080)
+if ($host === 'localhost:8000' || $host === 'localhost:8080') {
     $base_path = '';
 } else {
     // For Apache (localhost/PHPCom_APIver)
@@ -35,10 +38,11 @@ define('BASE_URL', $protocol . '://' . $host . $base_path);
 define('API_URL', BASE_URL . '/api');
 
 // Database configuration
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'Bright_Database');
-define('DB_USER', 'root');
-define('DB_PASS', 'Leduy0924A@');
+// Database configuration
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_NAME', getenv('DB_NAME') ?: 'Bright_Database');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASSWORD') ?: 'Leduy0924A@');
 
 // Email configuration for contact form
 define('ADMIN_EMAIL', getenv('ADMIN_EMAIL') ?: 'admin@brightshop.com');

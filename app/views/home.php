@@ -182,7 +182,7 @@ function loadFeaturedProducts() {
 }
 
 function loadCategories() {
-    fetch(API_URL + '/categories')
+    fetch(API_URL + '/categories?limit=4')
         .then(response => response.json())
         .then(data => {
             if (data.success) {

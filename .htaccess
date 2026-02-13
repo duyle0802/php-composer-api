@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteBase /PHPCom_APIver/
+RewriteBase /
 
 # Don't rewrite real files and directories
 RewriteCond %{REQUEST_FILENAME} -f [OR]
