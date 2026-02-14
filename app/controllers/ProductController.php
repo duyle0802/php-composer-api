@@ -16,7 +16,7 @@ class ProductController
     public function getAll()
     {
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 7; // Default 7 as requested
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : (defined('ITEMS_PER_PAGE') ? ITEMS_PER_PAGE : 9); // Default from config (9)
         $offset = ($page - 1) * $limit;
         $category_id = isset($_GET['category_id']) && $_GET['category_id'] !== '' ? (int)$_GET['category_id'] : null;
 

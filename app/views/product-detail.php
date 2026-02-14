@@ -64,7 +64,12 @@ function displayProductDetail(product) {
                 
                 <div class="mb-4">
                     <label for="quantity" class="form-label">Số lượng</label>
-                    <input type="number" id="quantity" class="form-control" value="1" min="1" max="${product.quantity_in_stock}" ${outOfStock ? 'disabled' : ''}>
+                    <div class="input-group" style="width: 160px;">
+                        <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()" ${outOfStock ? 'disabled' : ''}>-</button>
+                        <input type="number" id="quantity" class="form-control text-center" value="1" min="1" max="${product.quantity_in_stock}" ${outOfStock ? 'disabled' : ''} onchange="validateQuantity(this, ${product.quantity_in_stock})">
+                        <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity(${product.quantity_in_stock})" ${outOfStock ? 'disabled' : ''}>+</button>
+                    </div>
+                    <div id="quantity-warning" class="text-danger mt-2 small fw-bold" style="display: none;"></div>
                 </div>
                 
                 <div class="d-flex gap-2 mb-4">
@@ -131,6 +136,67 @@ function checkoutNow(productId) {
             showAlert(data.message || 'Lỗi khi thêm vào giỏ hàng', 'danger');
         }
     });
+}
+
+function increaseQuantity(maxStock) {
+    const input = document.getElementById('quantity');
+    let value = parseInt(input.value) || 0;
+    if (value < maxStock) {
+        input.value = value + 1;
+        triggerQuantityChange();
+        hideWarning();
+    } else {
+        showWarning('Đã đạt giới hạn số lượng trong kho!');
+    }
+}
+
+function decreaseQuantity() {
+    const input = document.getElementById('quantity');
+    let value = parseInt(input.value) || 0;
+    if (value > 1) {
+        input.value = value - 1;
+        triggerQuantityChange();
+        hideWarning();
+    }
+}
+
+function validateQuantity(input, maxStock) {
+    let value = parseInt(input.value);
+    
+    if (isNaN(value) || value < 1) {
+        value = 1;
+        hideWarning();
+    } else if (value > maxStock) {
+        value = maxStock;
+        showWarning('Đã đạt giới hạn số lượng trong kho!');
+    } else {
+        hideWarning();
+    }
+    
+    input.value = value;
+    triggerQuantityChange();
+}
+
+function showWarning(msg) {
+    const el = document.getElementById('quantity-warning');
+    if (el) {
+        el.textContent = msg;
+        el.style.display = 'block';
+        setTimeout(() => {
+            el.style.display = 'none';
+        }, 3000);
+    }
+}
+
+function hideWarning() {
+    const el = document.getElementById('quantity-warning');
+    if (el) el.style.display = 'none';
+}
+
+function triggerQuantityChange() {
+    const input = document.getElementById('quantity');
+    const event = new Event('change', { bubbles: true });
+    input.dispatchEvent(event);
 }
 
 // Update order summary when quantity changes
