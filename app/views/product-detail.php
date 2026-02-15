@@ -64,10 +64,10 @@ function displayProductDetail(product) {
                 
                 <div class="mb-4">
                     <label for="quantity" class="form-label">Số lượng</label>
-                    <div class="input-group" style="width: 160px;">
-                        <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()" ${outOfStock ? 'disabled' : ''}>-</button>
-                        <input type="number" id="quantity" class="form-control text-center" value="1" min="1" max="${product.quantity_in_stock}" ${outOfStock ? 'disabled' : ''} onchange="validateQuantity(this, ${product.quantity_in_stock})">
-                        <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity(${product.quantity_in_stock})" ${outOfStock ? 'disabled' : ''}>+</button>
+                    <div class="quantity-selector">
+                        <button class="quantity-btn" type="button" onclick="decreaseQuantity()" ${outOfStock ? 'disabled' : ''}>-</button>
+                        <input type="number" id="quantity" class="quantity-input-custom" value="1" min="1" max="${product.quantity_in_stock}" ${outOfStock ? 'disabled' : ''} onchange="validateQuantity(this, ${product.quantity_in_stock})">
+                        <button class="quantity-btn" type="button" onclick="increaseQuantity(${product.quantity_in_stock})" ${outOfStock ? 'disabled' : ''}>+</button>
                     </div>
                     <div id="quantity-warning" class="text-danger mt-2 small fw-bold" style="display: none;"></div>
                 </div>

@@ -121,7 +121,7 @@
             <div class="col-lg-6 d-none d-lg-block">
                 <!-- Using fixed image path we just confirmed works -->
                 <div class="hero-image-container">
-                    <img src="<?php echo BASE_URL; ?>/public/products/main_image/bàn-phím-cơ-logitech-g-pro-x.png" class="hero-image" alt="Gaming Gear">
+                    <img src="<?php echo BASE_URL; ?>/public/images/products_image/bàn-phím-cơ-logitech-g-pro-x.png" class="hero-image" alt="Gaming Gear">
                 </div>
             </div>
         </div>
