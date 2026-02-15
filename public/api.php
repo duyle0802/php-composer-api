@@ -9,6 +9,13 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 }
 
 // Manual autoloader cho models và controllers
+// Manual autoloader cho models và controllers
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/../php_errors.log');
+error_reporting(E_ALL);
+
 spl_autoload_register(function ($class) {
     $prefix = 'App\\';
     $base_dir = __DIR__ . '/../app/';
@@ -38,16 +45,25 @@ $pdo = $db->connect();
 $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 // Handle both Apache and PHP built-in server routing
-if (strpos($request_uri, '/PHPCom_APIver/api/') !== false) {
-    // Apache routing
+if (strpos($request_uri, '/PHPCom_APIver/public/api.php/') !== false) {
+    // Direct access via public/api.php
+    $request_uri = str_replace('/PHPCom_APIver/public/api.php/', '', $request_uri);
+} elseif (strpos($request_uri, '/public/api.php/') !== false) {
+    // Direct access via /public/api.php (e.g. php -S localhost:8000)
+    $request_uri = str_replace('/public/api.php/', '', $request_uri);
+} elseif (strpos($request_uri, '/PHPCom_APIver/api/') !== false) {
+    // Apache routing with rewrite (if configured)
     $request_uri = str_replace('/PHPCom_APIver/api/', '', $request_uri);
 } elseif (strpos($request_uri, '/api/') !== false) {
-    // PHP built-in server routing
+    // PHP built-in server routing usually
     $request_uri = str_replace('/api/', '', $request_uri);
 }
 
 // Remove leading and trailing slashes
 $request_uri = trim($request_uri, '/');
+
+error_log("Raw URI: " . $_SERVER['REQUEST_URI']);
+error_log("Processed URI: " . $request_uri);
 
 // Route handling
 $routes = [
@@ -65,6 +81,7 @@ $routes = [
     'products' => ['method' => 'GET', 'controller' => 'ProductController', 'action' => 'getAll'],
     'products/featured' => ['method' => 'GET', 'controller' => 'ProductController', 'action' => 'getFeatured'],
     'products/search' => ['method' => 'GET', 'controller' => 'ProductController', 'action' => 'searchAndFilter'],
+    'products/suggest' => ['method' => 'GET', 'controller' => 'ProductController', 'action' => 'suggest'],
     'products/detail' => ['method' => 'GET', 'controller' => 'ProductController', 'action' => 'getById'],
     'products/create' => ['method' => 'POST', 'controller' => 'ProductController', 'action' => 'create'],
     'products/update' => ['method' => 'POST', 'controller' => 'ProductController', 'action' => 'update'],
@@ -132,11 +149,20 @@ foreach ($routes as $route => $route_config) {
         
         if (class_exists($controller_class)) {
             $action = $route_config['action'];
-            $controller = new $controller_class($pdo);
-            header('Content-Type: application/json');
-            echo $controller->$action();
-            $route_found = true;
-            break;
+                try {
+                    $controller = new $controller_class($pdo);
+                    header('Content-Type: application/json');
+                    echo $controller->$action();
+                } catch (\Throwable $e) {
+                    http_response_code(500);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Internal Server Error: ' . $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                }
+                $route_found = true;
+                break;
         }
     }
 }

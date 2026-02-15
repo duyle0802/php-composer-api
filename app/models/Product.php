@@ -72,8 +72,12 @@ class Product
     {
         $query = "SELECT p.*, c.name as category_name FROM products p 
                   LEFT JOIN categories c ON p.category_id = c.id
-                  WHERE (p.name LIKE :search OR p.description LIKE :search)";
+                  WHERE 1=1"; // Start with true condition
         
+        if (!empty($search)) {
+             $query .= " AND (p.name LIKE :search_name OR p.description LIKE :search_desc)";
+        }
+
         if ($category_id !== null) {
             $query .= " AND p.category_id = :category_id";
         }
@@ -94,8 +98,11 @@ class Product
         
         $stmt = $this->db->prepare($query);
         
-        $search_param = "%$search%";
-        $stmt->bindParam(':search', $search_param);
+        if (!empty($search)) {
+            $search_param = "%$search%";
+            $stmt->bindParam(':search_name', $search_param);
+            $stmt->bindParam(':search_desc', $search_param);
+        }
         
         if ($category_id !== null) {
             $stmt->bindParam(':category_id', $category_id, \PDO::PARAM_INT);
@@ -143,8 +150,11 @@ class Product
 
     public function countSearchResults($search, $category_id = null, $min_price = null, $max_price = null)
     {
-        $query = "SELECT COUNT(*) as count FROM products 
-                  WHERE (name LIKE :search OR description LIKE :search)";
+        $query = "SELECT COUNT(*) as count FROM products WHERE 1=1";
+        
+        if (!empty($search)) {
+            $query .= " AND (name LIKE :search_name OR description LIKE :search_desc)";
+        }
         
         if ($category_id !== null) {
             $query .= " AND category_id = :category_id";
@@ -160,8 +170,11 @@ class Product
         
         $stmt = $this->db->prepare($query);
         
-        $search_param = "%$search%";
-        $stmt->bindParam(':search', $search_param);
+        if (!empty($search)) {
+            $search_param = "%$search%";
+            $stmt->bindParam(':search_name', $search_param);
+            $stmt->bindParam(':search_desc', $search_param);
+        }
         
         if ($category_id !== null) {
             $stmt->bindParam(':category_id', $category_id, \PDO::PARAM_INT);
@@ -269,6 +282,20 @@ class Product
         
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll();
+    }
+
+    public function searchSuggestions($search)
+    {
+        $query = "SELECT id, name, image FROM products 
+                  WHERE name LIKE :search 
+                  LIMIT 5";
+        
+        $stmt = $this->db->prepare($query);
+        $search_param = "%$search%";
+        $stmt->bindParam(':search', $search_param);
         $stmt->execute();
         
         return $stmt->fetchAll();

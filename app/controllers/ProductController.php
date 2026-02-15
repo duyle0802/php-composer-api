@@ -73,17 +73,22 @@ class ProductController
         $limit = defined('ITEMS_PER_PAGE') ? ITEMS_PER_PAGE : 9;
         $offset = ($page - 1) * $limit;
 
-        if (empty($search) && !$category_id) {
-            http_response_code(400);
-            return json_encode(['success' => false, 'message' => 'Search or category required']);
-        }
+        // Allow filtering by price only, so we don't strictly require search or category
+        // if (empty($search) && !$category_id) { ... } -> Removed constraint
 
-        if ($search) {
+        // If any filter is present (search, category, price), use searchProducts
+        if ($search || $category_id || $min_price || $max_price) {
             $products = $this->product_model->searchProducts($search, $category_id, $min_price, $max_price, $limit, $offset);
             $total = $this->product_model->countSearchResults($search, $category_id, $min_price, $max_price);
         } else {
-            $products = $this->product_model->getByCategory($category_id, $limit, $offset);
-            $total = $this->product_model->countByCategory($category_id);
+            // No filters, just list all by category or all
+            if ($category_id) {
+                 $products = $this->product_model->getByCategory($category_id, $limit, $offset);
+                 $total = $this->product_model->countByCategory($category_id);
+            } else {
+                 $products = $this->product_model->getAll($limit, $offset);
+                 $total = $this->product_model->countAll();
+            }
         }
 
         $total_pages = ceil($total / $limit);
@@ -192,5 +197,19 @@ class ProductController
             http_response_code(500);
             return json_encode(['success' => false, 'message' => 'Failed to delete product']);
         }
+    }
+
+    public function suggest()
+    {
+        $search = isset($_GET['q']) ? trim($_GET['q']) : '';
+
+        if (empty($search)) {
+            return json_encode(['success' => true, 'suggestions' => []]);
+        }
+
+        $suggestions = $this->product_model->searchSuggestions($search);
+        
+        http_response_code(200);
+        return json_encode(['success' => true, 'suggestions' => $suggestions]);
     }
 }

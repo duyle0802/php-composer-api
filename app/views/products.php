@@ -57,6 +57,75 @@ document.addEventListener('DOMContentLoaded', function() {
     if (currentCategory) {
         document.getElementById('category-filter').value = currentCategory;
     }
+
+    // Add Enter key support for search
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            applyFilters();
+            hideSuggestions();
+        }
+    });
+
+    // Autocomplete Logic
+    let debounceTimer;
+    const suggestionsContainer = document.createElement('div');
+    suggestionsContainer.className = 'suggestions-dropdown';
+    searchInput.parentNode.classList.add('search-container'); // Ensure parent has relative path
+    searchInput.parentNode.appendChild(suggestionsContainer);
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+        
+        if (query.length < 2) {
+            hideSuggestions();
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetch(API_URL + '/products/suggest?q=' + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.suggestions.length > 0) {
+                        showSuggestions(data.suggestions);
+                    } else {
+                        hideSuggestions();
+                    }
+                });
+        }, 300);
+    });
+
+    // Close suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+            hideSuggestions();
+        }
+    });
+
+    function showSuggestions(suggestions) {
+        let html = '';
+        suggestions.forEach(item => {
+            html += `
+                <div class="suggestion-item" onclick="selectSuggestion('${item.name}')">
+                    <img src="${item.image || 'https://via.placeholder.com/40'}" class="suggestion-image" alt="${item.name}">
+                    <span class="suggestion-name">${item.name}</span>
+                </div>
+            `;
+        });
+        suggestionsContainer.innerHTML = html;
+        suggestionsContainer.style.display = 'block';
+    }
+
+    window.selectSuggestion = function(name) {
+        searchInput.value = name;
+        hideSuggestions();
+        applyFilters();
+    };
+
+    function hideSuggestions() {
+        suggestionsContainer.style.display = 'none';
+    }
 });
 
 function loadCategories() {
