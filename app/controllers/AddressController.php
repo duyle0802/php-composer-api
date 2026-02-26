@@ -34,11 +34,14 @@ class AddressController
         $is_default = isset($data['is_default']) ? (int)$data['is_default'] : 0;
 
         // Geocode Address if lat/lng not provided
-        $coords = null;
         if (isset($data['lat'], $data['lng'])) {
             $coords = ['lat' => $data['lat'], 'lng' => $data['lng']];
         } else {
             $coords = $this->geocodeAddress($address_line);
+            if ($coords) {
+                // geocodeAddress returns 'lon', map it to 'lng'
+                $coords['lng'] = $coords['lon'];
+            }
         }
         
         if (!$coords) {

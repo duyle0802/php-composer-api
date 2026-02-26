@@ -384,13 +384,14 @@ function renderOrderStatusChart(data) {
     const ctx = document.getElementById('orderStatusChart').getContext('2d');
     
     // Process data
-    const labels = data.map(item => item.payment_status.toUpperCase());
+    const labels = data.map(item => item.status.toUpperCase());
     const values = data.map(item => item.count);
     const colors = {
-        'PAID': '#28a745',
         'PENDING': '#ffc107',
-        'FAILED': '#dc3545',
-        'COD': '#17a2b8'
+        'CONFIRMED': '#17a2b8',
+        'SHIPPING': '#fd7e14',
+        'COMPLETED': '#28a745',
+        'CANCELLED': '#dc3545'
     };
     const bgColors = labels.map(label => colors[label] || '#6c757d');
 

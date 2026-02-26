@@ -65,18 +65,19 @@ class AdminController
         $this->checkAdmin();
 
         // 1. Order Status (Pie Chart) - Last 30 Days
-        $queryStatus = "SELECT payment_status, COUNT(*) as count 
+        $queryStatus = "SELECT status, COUNT(*) as count 
                         FROM orders 
                         WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
-                        GROUP BY payment_status";
+                        GROUP BY status";
         $stmtStatus = $this->db->prepare($queryStatus);
         $stmtStatus->execute();
         $statusData = $stmtStatus->fetchAll(\PDO::FETCH_ASSOC);
 
         // 2. Revenue (Bar/Line Chart) - Last 30 Days
+        // Include 'paid' (MoMo) or 'completed' (COD)
         $queryRevenue = "SELECT DATE(created_at) as date, SUM(total_amount) as revenue 
                          FROM orders 
-                         WHERE payment_status = 'paid' 
+                         WHERE (payment_status = 'paid' OR status = 'completed')
                          AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) 
                          GROUP BY DATE(created_at) 
                          ORDER BY DATE(created_at) ASC";
